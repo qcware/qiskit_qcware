@@ -1,0 +1,72 @@
+* Results
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/result/result.py]]
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/result/models.py]] (for ExperimentResult)
+  ** Returns
+  *** qasm_simulator returns
+    #+begin_src python
+      result = {'backend_name': self.name(),
+		'backend_version': self._configuration.backend_version,
+		'qobj_id': qobj.qobj_id,
+		'job_id': job_id,
+		'results': result_list,
+		'status': 'COMPLETED',
+		'success': True,
+		'time_taken': (end - start),
+		'header': qobj.header.to_dict()}
+    #+end_src
+    where every result in results_list is a run on an experiment like
+    #+begin_src python
+      {
+      "name": name of this experiment (obtained from qobj.experiment header)
+      "seed": random seed used for simulation
+      "shots": number of shots used in the simulation
+      "data":
+	  {
+	  "counts": {'0x9: 5, ...},
+	  "memory": ['0x9', '0xF', '0x1D', ..., '0x9']
+	  },
+      "status": status string for the simulation
+      "success": boolean
+      "time_taken": simulation time of this single experiment
+      }
+
+    #+end_src
+  *** AQT simulator returns
+  #+begin_src python
+     [{
+	 'success': True,
+	 'shots': len(result['samples']),
+	 'data': {'counts': self._format_counts(result['samples'])},
+	 'header': {'memory_slots': self.qobj.config.memory_slots,
+		    'name': self.qobj.experiments[0].header.name}
+     }]
+
+
+     return Result.from_dict({
+	'results': results,
+	'backend_name': self._backend._configuration.backend_name,
+	'backend_version': self._backend._configuration.backend_version,
+	'qobj_id': self.qobj.qobj_id,
+	'success': True,
+	'job_id': self._job_id,
+    })
+
+* Jobs
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/job.py]]
+  ** [[https://github.com/qiskit-community/qiskit-aqt-provider/blob/master/qiskit/providers/aqt/aqt_job.py]]
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/basicaerjob.py]]
+
+
+
+
+
+  #+end_src
+
+* Backends
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/backend.py]]
+  ** [[https://github.com/qiskit-community/qiskit-aqt-provider/blob/master/qiskit/providers/aqt/aqt_backend.py]]
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/qasm_simulator.py]]
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/statevector_simulator.py]]
+
+* Options
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/options.py]]

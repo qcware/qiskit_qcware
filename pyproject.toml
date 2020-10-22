@@ -1,0 +1,25 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "qiskit_qcware"
+dist-name = "qiskit_qcware"
+author = "Vic Putz"
+author-email = "vic.putz@qcware.com"
+home-page = "http://github.com/qcware/qiskit_qcware"
+keywords = "quantum,computing,cloud,API"
+description-file="README.rst"
+classifiers = [
+	    "License :: OSI Approved :: Apache Software License",
+	    "Programming Language :: Python :: 3",
+	    "Operating System :: OS Independent",
+	    ]
+requires = [
+	 "qcware == 2.2",
+	 "qcware-quasar >= 1.0.1",
+	 "qiskit-terra >= 0.10.0",
+	 "dpcontracts >= 0.6.0"
+]
+
+
