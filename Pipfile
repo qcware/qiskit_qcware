@@ -8,6 +8,7 @@ mypy = "*"
 pytest = "*"
 python-language-server = {extras = ["mccabe", "pyflakes", "rope", "yapf"],version = "*"}
 flit = "*"
+qusetta = {extras = ["qiskit"],git = "https://github.com/qcware/qusetta"}
 
 [packages]
 qcware = "==2.2"

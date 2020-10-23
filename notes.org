@@ -65,5 +65,5 @@
   ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/qasm_simulator.py]]
   ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/statevector_simulator.py]]
 
-* Options
-  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/options.py]]
+* Provider
+  ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/provider.py]]

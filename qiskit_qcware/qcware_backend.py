@@ -5,12 +5,12 @@ from qiskit.result.models import (ExperimentResult, ExperimentResultData)
 from qiskit.result import Result
 from qiskit.circuit import QuantumCircuit
 from quasar import Circuit as QuasarCircuit
-from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
-from quasar import CountHistogram as QuasarCountHistogram
 from quasar import QuasarSimulatorBackend
+from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
 from typing import Union, List
 from uuid import uuid4
 from .qcware_job import QcwareJob
+from .conversions import measurement_result_from_qiskit_circuit
 
 # based in part on the documentation located at
 # https://github.com/Qiskit/qiskit-tutorials/blob/master/legacy_tutorials/terra/6_creating_a_provider.ipynb
@@ -58,39 +58,6 @@ class LocalQuasarBackend(BackendV1):
     def _default_options(cls) -> Options:
         return Options(shots=1000)
 
-    def _qiskit_circuit_to_quasar_circuit(self,
-                                          c: QuantumCircuit) -> QuasarCircuit:
-        result = QuasarCircuit()
-        result.H(0).CX(0, 1)
-        return result
-
-    def _execute_quasar_circuit_measurement(
-            self, c: QuasarCircuit,
-            options: Options) -> QuasarProbabilityHistogram:
-        backend = QuasarSimulatorBackend()
-        return backend.run_measurement(c, nmeasurement=options.shots)
-
-    def _quasar_histogram_to_qiskit(
-            self, h: QuasarProbabilityHistogram) -> ExperimentResult:
-        count_histogram = h.to_count_histogram()
-        # count histogram is a dict of integer representations of state to counts
-        qiskit_counts = {hex(k): v for k, v in count_histogram.items()}
-        experiment_data = ExperimentResultData(counts=qiskit_counts)
-        experiment_result = ExperimentResult(
-            shots=count_histogram.nmeasurement,
-            success=True,
-            data=experiment_data)
-        # meas_level = MeasLevel.CLASSIFIED, meas_return = MeasLevel.AVERAGE ?
-        # TODO must set jobj_id and job_id
-        return experiment_result
-
-    def _experiment_result_from_circuit(self, c: QuasarCircuit,
-                                       options: Options) -> ExperimentResult:
-        qh: QuasarProbabilityHistogram = self._execute_quasar_circuit_measurement(
-            c, options)
-        er: ExperimentResult = self._quasar_histogram_to_qiskit(qh)
-        return er
-
     def run(self, run_input: Union[QuantumCircuit, List[QuantumCircuit]],
             **options) -> QcwareJob:
         """
@@ -124,8 +91,7 @@ class LocalQuasarBackend(BackendV1):
         # actually fill in the result here using a dummy circuit for now
         if isinstance(run_input, QuantumCircuit):
             run_input = [run_input]
-        quasar_circuits = [ self._qiskit_circuit_to_quasar_circuit(c) for c in run_input ]
-        experiment_results = [self._experiment_result_from_circuit(c, job_options) for c in quasar_circuits]
+        experiment_results = [measurement_result_from_qiskit_circuit(c, job_options, QuasarSimulatorBackend()) for c in run_input]
         # currently only handling one circuit
         job._result = Result(
             backend_name=self._configuration.backend_name,

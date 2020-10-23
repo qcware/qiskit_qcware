@@ -1,4 +1,4 @@
-from qiskit_qcware import LocalQuasarBackend
+from qiskit_qcware import LocalQuasarBackend, QcwareProvider
 from qiskit import execute, QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
@@ -10,6 +10,7 @@ def test_stub():
     qc.cx(qreg[0], qreg[1])
     qc.measure(qreg, creg)
 
-    stub_job = execute(qc, backend=LocalQuasarBackend(), shots=100)
+    provider = QcwareProvider()
+    stub_job = execute(qc, backend=provider.get_backend('local_quasar_simulator'), shots=100)
     print(stub_job.result())
     assert(False)
