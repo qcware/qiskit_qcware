@@ -1,6 +1,7 @@
-import qcware
-from qiskit.providers import BackendV1, Provider
-from qiskit.providers.models import BackendConfiguration
+# import qcware
+from qiskit.providers import (BackendV1, Provider, JobStatus, Options)
+from qiskit.providers.models import (BackendConfiguration)
+from qiskit.result.models import (ExperimentResult, ExperimentResultData)
 from qiskit.circuit import QuantumCircuit
 from quasar import Circuit as QuasarCircuit
 from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
@@ -8,7 +9,7 @@ from quasar import CountHistogram as QuasarCountHistogram
 from quasar import QuasarSimulatorBackend
 from typing import Union, List
 from uuid import uuid4
-from qcware_job import QcwareJob
+from .qcware_job import QcwareJob
 
 # based in part on the documentation located at
 # https://github.com/Qiskit/qiskit-tutorials/blob/master/legacy_tutorials/terra/6_creating_a_provider.ipynb
@@ -52,28 +53,41 @@ class LocalQuasarBackend(BackendV1):
             configuration=BackendConfiguration.from_dict(configuration),
             provider=provider)
 
-    def _qiskit_circuit_to_quasar_circuit(self, c: QuantumCircuit)->QuasarCircuit:
+    @classmethod
+    def _default_options(cls) -> Options:
+        return Options(shots=1000)
+
+    def _qiskit_circuit_to_quasar_circuit(self,
+                                          c: QuantumCircuit) -> QuasarCircuit:
         result = Circuit()
-        result.H(0).CX(0,1)
+        result.H(0).CX(0, 1)
         return result
 
-    def _execute_quasar_circuit_measurement(self, c: QuasarCircuit)->QuasarHistogram:
+    def _execute_quasar_circuit_measurement(
+            self, c: QuasarCircuit) -> QuasarProbabilityHistogram:
         backend = QuasarSimulatorBackend()
         return backend.run_measurement(c)
 
-    def _quasar_histogram_to_qiskit(self, h: QuasarProbabilityHistogram)->ExperimentResult:
+    def _quasar_histogram_to_qiskit(
+            self, h: QuasarProbabilityHistogram) -> ExperimentResult:
         count_histogram = h.to_count_histogram()
         # count histogram is a dict of integer representations of state to counts
-        qiskit_counts = { hex(k): v for k,v in count_histogram.items() }
+        qiskit_counts = {hex(k): v for k, v in count_histogram.items()}
         experiment_data = ExperimentResultData(counts=qiskit_counts)
-        experiment_result = ExperimentResult(shots=count_histogram.nmeasurement,
-                                             success=True,
-                                             data=experiment_data)
+        experiment_result = ExperimentResult(
+            shots=count_histogram.nmeasurement,
+            success=True,
+            data=experiment_data)
         # meas_level = MeasLevel.CLASSIFIED, meas_return = MeasLevel.AVERAGE ?
         # TODO must set jobj_id and job_id
 
-    def run(self, run_input: Union[QuantumCircuit,
-                                   List[QuantumCircuit]]) -> QcwareJob:
+    def experiment_result_from_circuit(c: QuasarCircuit) -> ExperimentResult:
+        qh: QuasarHistogram = self._execute_quasar_circuit_measurement(c)
+        er: ExperimentResult = self._quasar_histogram_to_qiskit(qh)
+        return er
+
+    def run(self, run_input: Union[QuantumCircuit, List[QuantumCircuit]],
+            **options) -> QcwareJob:
         """
         Run a circuit or list of circuits
 
@@ -96,11 +110,19 @@ class LocalQuasarBackend(BackendV1):
         # (backend._run_job) and then "submits" it; the job class has
         # a process pool executor and it's the job that actually
         # executes the result.
-        job = QcwareJob(self, uuid4(), qobj=qobj)
-        # actually fill in the result here
+        job: QcwareJob = QcwareJob(self, uuid4(), qobj=qobj)
+        job._status = JobStatus.RUNNING
+        # actually fill in the result here using a dummy circuit for now
+        c: QuasarCircuit = QuasarCircuit()
+        c.H(0).CX(0, 1)
+        er = self.experiment_result_from_circuit(c)
         # currently only handling one circuit
-        job._result = Result(backend_name=self._configuration.backend_name,
-                             backend_version=self._configuration.backend_version,
-                             qobj_id=None,
-                             self.job_id = job.job_id())
+        job._result = Result(
+            backend_name=self._configuration.backend_name,
+            backend_version=self._configuration.backend_version,
+            qobj_id=None,
+            job_id=job.job_id(),
+            success=True,
+            results=[er])
+        job._status = JobStatus.DONE
         return job

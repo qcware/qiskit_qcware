@@ -20,6 +20,7 @@ class QcwareJob(JobV1):
                  qobj: Qobj = None):
         super().__init__(backend, job_id)
         self._result = None
+        self._status = JobStatus.INITIALIZING
 
     @require("Job must be in a final state", lambda args: args.self.in_final_state())
     def result(self)->Result:
@@ -43,7 +44,7 @@ class QcwareJob(JobV1):
         """
         # see qiskit.providers.jobstatus
         # https://github.com/Qiskit/qiskit-terra/blob/900c048df8d763ec1b43cb0d32afb3e6ef5c48ae/qiskit/providers/jobstatus.py
-        pass
+        return self._status
 
     def submit(self):
         """

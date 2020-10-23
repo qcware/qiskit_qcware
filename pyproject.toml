@@ -18,7 +18,7 @@ classifiers = [
 requires = [
 	 "qcware == 2.2",
 	 "qcware-quasar >= 1.0.1",
-	 "qiskit-terra >= 0.10.0",
+	 "qiskit-terra >= 0.16.0",
 	 "dpcontracts >= 0.6.0"
 ]
 
