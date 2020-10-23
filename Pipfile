@@ -6,11 +6,12 @@ verify_ssl = true
 [dev-packages]
 mypy = "*"
 pytest = "*"
+python-language-server = {extras = ["mccabe", "pyflakes", "rope", "yapf"],version = "*"}
 
 [packages]
 qcware = "==2.2"
 qcware-quasar = "*"
-qiskit-terra = "==0.16.0"
+# qiskit-terra = "==0.16.0"
 dpcontracts = "*"
 
 [requires]
