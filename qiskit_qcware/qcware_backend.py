@@ -2,6 +2,7 @@
 from qiskit.providers import (BackendV1, Provider, JobStatus, Options)
 from qiskit.providers.models import (BackendConfiguration)
 from qiskit.result.models import (ExperimentResult, ExperimentResultData)
+from qiskit.result import Result
 from qiskit.circuit import QuantumCircuit
 from quasar import Circuit as QuasarCircuit
 from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
@@ -36,7 +37,7 @@ class LocalQuasarBackend(BackendV1):
             'coupling_map': None,
             'description':
             "Wrapper for the QuasarSimulator classical testing simulator",
-            'basis_gates': ['h', 'x'],
+            'basis_gates': ['h', 'cx'],
             'memory': True,
             'n_qubits': 30,
             'conditional': False,
@@ -59,14 +60,15 @@ class LocalQuasarBackend(BackendV1):
 
     def _qiskit_circuit_to_quasar_circuit(self,
                                           c: QuantumCircuit) -> QuasarCircuit:
-        result = Circuit()
+        result = QuasarCircuit()
         result.H(0).CX(0, 1)
         return result
 
     def _execute_quasar_circuit_measurement(
-            self, c: QuasarCircuit) -> QuasarProbabilityHistogram:
+            self, c: QuasarCircuit,
+            options: Options) -> QuasarProbabilityHistogram:
         backend = QuasarSimulatorBackend()
-        return backend.run_measurement(c)
+        return backend.run_measurement(c, nmeasurement=options.shots)
 
     def _quasar_histogram_to_qiskit(
             self, h: QuasarProbabilityHistogram) -> ExperimentResult:
@@ -80,9 +82,12 @@ class LocalQuasarBackend(BackendV1):
             data=experiment_data)
         # meas_level = MeasLevel.CLASSIFIED, meas_return = MeasLevel.AVERAGE ?
         # TODO must set jobj_id and job_id
+        return experiment_result
 
-    def experiment_result_from_circuit(c: QuasarCircuit) -> ExperimentResult:
-        qh: QuasarHistogram = self._execute_quasar_circuit_measurement(c)
+    def _experiment_result_from_circuit(self, c: QuasarCircuit,
+                                       options: Options) -> ExperimentResult:
+        qh: QuasarProbabilityHistogram = self._execute_quasar_circuit_measurement(
+            c, options)
         er: ExperimentResult = self._quasar_histogram_to_qiskit(qh)
         return er
 
@@ -110,12 +115,17 @@ class LocalQuasarBackend(BackendV1):
         # (backend._run_job) and then "submits" it; the job class has
         # a process pool executor and it's the job that actually
         # executes the result.
-        job: QcwareJob = QcwareJob(self, uuid4(), qobj=qobj)
+        # merge options with self.options
+        job_options = self.options
+        job_options.update_options(**options)
+
+        job: QcwareJob = QcwareJob(self, str(uuid4()))
         job._status = JobStatus.RUNNING
         # actually fill in the result here using a dummy circuit for now
-        c: QuasarCircuit = QuasarCircuit()
-        c.H(0).CX(0, 1)
-        er = self.experiment_result_from_circuit(c)
+        if isinstance(run_input, QuantumCircuit):
+            run_input = [run_input]
+        quasar_circuits = [ self._qiskit_circuit_to_quasar_circuit(c) for c in run_input ]
+        experiment_results = [self._experiment_result_from_circuit(c, job_options) for c in quasar_circuits]
         # currently only handling one circuit
         job._result = Result(
             backend_name=self._configuration.backend_name,
@@ -123,6 +133,6 @@ class LocalQuasarBackend(BackendV1):
             qobj_id=None,
             job_id=job.job_id(),
             success=True,
-            results=[er])
+            results=experiment_results)
         job._status = JobStatus.DONE
         return job

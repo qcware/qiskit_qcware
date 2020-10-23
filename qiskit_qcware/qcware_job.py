@@ -3,6 +3,7 @@ from qiskit.providers import (JobV1, JobError, JobTimeoutError, Backend,
 from qiskit.result import Result
 from qiskit.qobj import Qobj
 from dpcontracts import require
+from typing import Optional
 
 # using base from https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/job.py
 
@@ -16,10 +17,9 @@ class QcwareJob(JobV1):
     def __init__(self,
                  backend: Backend,
                  job_id: str,
-                 access_token=None,
-                 qobj: Qobj = None):
-        super().__init__(backend, job_id)
-        self._result = None
+                 **kwargs) -> None:
+        super().__init__(backend, job_id, **kwargs)
+        self._result: Optional[Result] = None
         self._status = JobStatus.INITIALIZING
 
     @require("Job must be in a final state", lambda args: args.self.in_final_state())
