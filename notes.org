@@ -55,6 +55,7 @@
   ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/job.py]]
   ** [[https://github.com/qiskit-community/qiskit-aqt-provider/blob/master/qiskit/providers/aqt/aqt_job.py]]
   ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/basicaer/basicaerjob.py]]
+  ** https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/jobstatus.py
 
 * Options
   ** [[https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/options.py]]
