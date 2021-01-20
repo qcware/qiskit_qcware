@@ -91,7 +91,11 @@ class LocalQuasarBackend(BackendV1):
         # actually fill in the result here using a dummy circuit for now
         if isinstance(run_input, QuantumCircuit):
             run_input = [run_input]
-        experiment_results = [measurement_result_from_qiskit_circuit(c, job_options, QuasarSimulatorBackend()) for c in run_input]
+        experiment_results = [
+            measurement_result_from_qiskit_circuit(c, job_options,
+                                                   QuasarSimulatorBackend())
+            for c in run_input
+        ]
         # currently only handling one circuit
         job._result = Result(
             backend_name=self._configuration.backend_name,

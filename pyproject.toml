@@ -1,25 +1,27 @@
 [build-system]
-requires = ["flit_core >=2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-[tool.flit.metadata]
-module = "qiskit_qcware"
-dist-name = "qiskit_qcware"
-author = "Vic Putz"
-author-email = "vic.putz@qcware.com"
-home-page = "http://github.com/qcware/qiskit_qcware"
-keywords = "quantum,computing,cloud,API"
-description-file="README.rst"
-classifiers = [
-	    "License :: OSI Approved :: Apache Software License",
-	    "Programming Language :: Python :: 3",
-	    "Operating System :: OS Independent",
-	    ]
-requires = [
-	 "qcware == 2.2",
-	 "qcware-quasar >= 1.0.1",
-	 "qiskit-terra >= 0.16.0",
-	 "dpcontracts >= 0.6.0"
-]
+[tool.poetry]
+name = "qiskit_qcware"
+version = "0.1.0"
+description = "A provider for Qiskit providing QCWare Forge services"
+authors = ["Vic Putz <vic.putz@qcware.com>"]
 
+[tool.poetry.dependencies]
+python = "^3.8"
+qcware = "^2.2"
+qcware-quasar = "^1.0.1"
+qiskit-terra = "^0.16.0"
+dpcontracts = "^0.6.0"
+qcware-transpile = {git = "ssh://git@github.com/qcware/qcware_transpile.git", rev = "main"}
 
+[tool.poetry.dev-dependencies]
+hypothesis = "^5.41.5"
+pytest = "^6.1.2"
+python-language-server = {extras = ["all"], version = "^0.36.1"}
+mypy = "^0.790"
+watchdog = {extras = ["watchmedo"], version = "^1.0.1"}
+invoke = "^1.4.1"
+pyls-mypy = "^0.1.8"
+pytest-parallel = "^0.1.0"

@@ -14,16 +14,14 @@ class QcwareJob(JobV1):
     # but this is not completely clear.
     # https://qiskit.org/documentation/stubs/qiskit.providers.BaseJob.html?highlight=basejob#qiskit.providers.BaseJob
     # job_id(str) is "a unique id in the context of the backend used to run the job
-    def __init__(self,
-                 backend: Backend,
-                 job_id: str,
-                 **kwargs) -> None:
+    def __init__(self, backend: Backend, job_id: str, **kwargs) -> None:
         super().__init__(backend, job_id, **kwargs)
         self._result: Optional[Result] = None
         self._status = JobStatus.INITIALIZING
 
-    @require("Job must be in a final state", lambda args: args.self.in_final_state())
-    def result(self)->Result:
+    @require("Job must be in a final state",
+             lambda args: args.self.in_final_state())
+    def result(self) -> Result:
         """
         Return the results of the job.
         """
