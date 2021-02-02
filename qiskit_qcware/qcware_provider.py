@@ -1,12 +1,13 @@
 from qiskit.providers import ProviderV1, Backend
 from qiskit.providers.providerutils import filter_backends
-from .qcware_backend import LocalQuasarBackend
+from .qcware_backend import LocalQuasarMeasurementBackend, LocalQuasarStatevectorBackend
 from typing import List
 
 
 class QcwareProvider(ProviderV1):
     def __init__(self):
-        self._backends = [LocalQuasarBackend(provider=self)]
+        self._backends = [LocalQuasarMeasurementBackend(provider=self),
+                          LocalQuasarStatevectorBackend(provider=self)]
 
     def backends(self, name: str = None, **kwargs) -> List[Backend]:
         """

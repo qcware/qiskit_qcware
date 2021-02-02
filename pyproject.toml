@@ -12,7 +12,7 @@ authors = ["Vic Putz <vic.putz@qcware.com>"]
 python = "^3.8"
 qcware = "^2.2"
 qcware-quasar = "^1.0.1"
-qiskit-terra = "^0.16.0"
+qiskit-terra = "^0.16.3"
 dpcontracts = "^0.6.0"
 qcware-transpile = {git = "ssh://git@github.com/qcware/qcware_transpile.git", rev = "main"}
 
@@ -25,3 +25,4 @@ watchdog = {extras = ["watchmedo"], version = "^1.0.1"}
 invoke = "^1.4.1"
 pyls-mypy = "^0.1.8"
 pytest-parallel = "^0.1.0"
+qiskit-aer = "^0.7.3"

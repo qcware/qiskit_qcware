@@ -1,16 +1,24 @@
-from qiskit_qcware import LocalQuasarBackend, QcwareProvider
-from qiskit import execute, QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit_qcware import QcwareProvider
+import qiskit
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
+
+def test_circuit():
+    qc: qiskit.QuantumCircuit = qiskit.QuantumCircuit(2,2)
+    qc.x(0)
+    qc.id(1)
+    qc.measure(1,0)
+    qc.measure(0,1)
+    return qc
 
 def test_stub():
-    qreg=QuantumRegister(2)
-    creg=ClassicalRegister(2)
-    qc: QuantumCircuit = QuantumCircuit(qreg, creg)
-    qc.h(qreg[0])
-    qc.cx(qreg[0], qreg[1])
-    # qc.measure(qreg, creg)
-
+    qc = test_circuit()
     provider = QcwareProvider()
-    stub_job = execute(qc, backend=provider.get_backend('local_quasar_simulator'), shots=100)
-    print(stub_job.result())
-    assert(False)
+    stub_job = qiskit.execute(qc, backend=provider.get_backend('local_measurement'), shots=100)
+    aer_backend = qiskit.Aer.get_backend('qasm_simulator')
+    aer_result  = qiskit.execute(qc, aer_backend, shots=100).result()
+    print(aer_result.data())
+    print(stub_job.result().data())
+
+test_stub()
