@@ -1,5 +1,5 @@
 from qcware_transpile.dialects import qiskit as qiskit_dialect
-from qcware_transpile.translations.qiskit.to_quasar import (
+from qcware_transpile.translations.qiskit.to_quasar import ( # type: ignore
     translation_set, native_is_translatable)  # type: ignore
 from .strategies.qiskit import gates, circuits  # type: ignore
 from qiskit_qcware import QcwareProvider
@@ -35,4 +35,4 @@ def test_qiskit_qcware(qiskit_circuit):
     note(qiskit_circuit.draw())
     pv_qcware = qcware_probability_vector(qiskit_circuit)
     pv_aer = aer_probability_vector(qiskit_circuit)
-    assert (numpy.allclose(pv_aer, pv_qcware, atol=0.0000001))
+    assert (numpy.allclose(pv_aer, pv_qcware, atol=1e-6))

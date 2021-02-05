@@ -4,7 +4,7 @@ from qiskit.result.models import (ExperimentResult, ExperimentResultData)
 from quasar import Circuit as QuasarCircuit
 from quasar import Backend as QuasarBackend
 from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
-from qcware_transpile.translations.qiskit.to_quasar import translate # type: ignore
+from qcware_transpile.translations.qiskit.to_quasar import translate  # type: ignore
 from typing import Dict
 
 
@@ -78,7 +78,7 @@ def measurement_result_from_qiskit_circuit(
     bit_map = qiskit_circuit_measurement_map(qiskit_circuit)
     quasar_circuit: QuasarCircuit = quasar_circuit_from_qiskit(qiskit_circuit)
     probability_histogram: QuasarProbabilityHistogram = backend.run_measurement(
-        quasar_circuit, nmeasurement=options.shots)
+        circuit=quasar_circuit, nmeasurement=options.shots)
     result: ExperimentResult = qiskit_experiment_result_from_quasar_probability_histogram(
         probability_histogram, bit_map)
     return result
@@ -96,6 +96,6 @@ def statevector_result_from_qiskit_circuit(
         qiskit_circuit: QiskitCircuit, options: Options,
         backend: QuasarBackend) -> ExperimentResult:
     quasar_circuit: QuasarCircuit = quasar_circuit_from_qiskit(qiskit_circuit)
-    sv = backend.run_statevector(quasar_circuit)
+    sv = backend.run_statevector(circuit=quasar_circuit)
     result: ExperimentResult = qiskit_experiment_result_from_statevector(sv)
     return result

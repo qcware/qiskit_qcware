@@ -4,13 +4,14 @@ from qiskit.providers.models import (BackendConfiguration)
 from qiskit.result import Result
 from qiskit.circuit import QuantumCircuit
 from quasar import QuasarSimulatorBackend
+from quasar.backend import Backend as QuasarBackend
 from typing import Union, List
 from uuid import uuid4
 from .qcware_job import QcwareJob
 from .conversions import (measurement_result_from_qiskit_circuit,
                           statevector_result_from_qiskit_circuit)
-from qcware_transpile.translations.qiskit.to_quasar import basis_gates # type: ignore
-
+from qcware_transpile.translations.qiskit.to_quasar import basis_gates  # type: ignore
+from qcware.circuits.quasar_backend import QuasarBackend as ForgeBackend
 # based in part on the documentation located at
 # https://github.com/Qiskit/qiskit-tutorials/blob/master/legacy_tutorials/terra/6_creating_a_provider.ipynb
 # and from the AQT backend, https://github.com/qiskit-community/qiskit-aqt-provider
@@ -20,19 +21,17 @@ from qcware_transpile.translations.qiskit.to_quasar import basis_gates # type: i
 EVERY_JOB_ID = 42
 
 
-class LocalQuasarMeasurementBackend(BackendV1):
+class QuasarMeasurementBackend(BackendV1):
     """
-    A qiskit wrapper backend for the qcware-quasar QuasarSimulator
-    backend, providing a local simulator for testing and validation
-    of circuit translation, etc.
+    Base class for QCWareProvider measurement-based backends
     """
     def __init__(self, provider: Provider = None):
         configuration = {
-            'backend_name': 'local_measurement',
             'backend_version': '0.0.0',
             'url': 'http://www.qcware.com',
-            'simulator': True,
+            'backend_name': "QuasarMeasurementBackend",
             'local': True,
+            'simulator': True,
             'coupling_map': None,
             'description':
             "Wrapper for the QuasarSimulator classical testing simulator",
@@ -52,6 +51,9 @@ class LocalQuasarMeasurementBackend(BackendV1):
         super().__init__(
             configuration=BackendConfiguration.from_dict(configuration),
             provider=provider)
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        raise NotImplementedError
 
     @classmethod
     def _default_options(cls) -> Options:
@@ -91,8 +93,8 @@ class LocalQuasarMeasurementBackend(BackendV1):
         if isinstance(run_input, QuantumCircuit):
             run_input = [run_input]
         experiment_results = [
-            measurement_result_from_qiskit_circuit(c, job_options,
-                                                   QuasarSimulatorBackend())
+            measurement_result_from_qiskit_circuit(
+                c, job_options, self.create_quasar_backend())
             for c in run_input
         ]
         # currently only handling one circuit
@@ -107,7 +109,39 @@ class LocalQuasarMeasurementBackend(BackendV1):
         return job
 
 
-class LocalQuasarStatevectorBackend(BackendV1):
+class LocalQuasarMeasurementBackend(QuasarMeasurementBackend):
+    """
+    A qiskit wrapper backend for the qcware-quasar QuasarSimulator
+    backend, providing a local simulator for testing and validation
+    of circuit translation, etc.
+    """
+    def __init__(self, provider: Provider = None):
+        super().__init__(provider=provider)
+        self._configuration.backend_name = "local_measurement"
+        self._configuration.local = True
+        self._configuration.description = "Local quasar simulator (returns counts)"
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        return QuasarSimulatorBackend()
+
+
+class ForgeMeasurementBackend(QuasarMeasurementBackend):
+    """
+    A quasar-based measurement backend that calls QCWare's Forge for evaluation,
+    defaulting to the qcware/gpu_simulator backend
+    """
+    def __init__(self, provider: Provider = None):
+        super().__init__(provider=provider)
+        self._configuration.backend_name = "forge_measurement"
+        self._configuration.local = False
+        self._configuration.description = "Forge backend (returns counts)"
+        self.forge_backend = "qcware/gpu_simulator"
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        return ForgeBackend(self.forge_backend)
+
+
+class QuasarStatevectorBackend(BackendV1):
     """
     A qiskit wrapper backend for the qcware-quasar QuasarSimulator
     backend, providing a local simulator for testing and validation
@@ -139,6 +173,9 @@ class LocalQuasarStatevectorBackend(BackendV1):
         super().__init__(
             configuration=BackendConfiguration.from_dict(configuration),
             provider=provider)
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        raise NotImplementedError
 
     @classmethod
     def _default_options(cls) -> Options:
@@ -192,3 +229,30 @@ class LocalQuasarStatevectorBackend(BackendV1):
             results=experiment_results)
         job._status = JobStatus.DONE
         return job
+
+
+class LocalQuasarStatevectorBackend(QuasarStatevectorBackend):
+    def __init__(self, provider: Provider = None):
+        super().__init__(provider=provider)
+        self._configuration.backend_name = "local_statevector"
+        self._configuration.local = True
+        self._configuration.description = "Local quasar simulator (returns statevector)"
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        return QuasarSimulatorBackend()
+
+
+class ForgeStatevectorBackend(QuasarStatevectorBackend):
+    """
+    A quasar-based measurement backend that calls QCWare's Forge for evaluation,
+    defaulting to the qcware/gpu_simulator backend
+    """
+    def __init__(self, provider: Provider = None):
+        super().__init__(provider=provider)
+        self._configuration.backend_name = "forge_statevector"
+        self._configuration.local = False
+        self._configuration.description = "Forge quasar backend (returns statevector)"
+        self.forge_backend = "qcware/gpu_simulator"
+
+    def create_quasar_backend(self) -> QuasarBackend:
+        return ForgeBackend(self.forge_backend)

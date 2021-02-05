@@ -10,7 +10,7 @@ authors = ["Vic Putz <vic.putz@qcware.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-qcware = "^2.2"
+qcware = "^3.0"
 qcware-quasar = "^1.0.1"
 qiskit-terra = "^0.16.3"
 qcware-transpile = "0.1.1.alpha.2"
