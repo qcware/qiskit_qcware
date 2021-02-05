@@ -1,17 +1,15 @@
 # import qcware
 from qiskit.providers import (BackendV1, Provider, JobStatus, Options)
 from qiskit.providers.models import (BackendConfiguration)
-from qiskit.result.models import (ExperimentResult, ExperimentResultData)
 from qiskit.result import Result
 from qiskit.circuit import QuantumCircuit
-from quasar import Circuit as QuasarCircuit
 from quasar import QuasarSimulatorBackend
-from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
 from typing import Union, List
 from uuid import uuid4
 from .qcware_job import QcwareJob
-from .conversions import measurement_result_from_qiskit_circuit, statevector_result_from_qiskit_circuit
-from qcware_transpile.translations.qiskit.to_quasar import basis_gates
+from .conversions import (measurement_result_from_qiskit_circuit,
+                          statevector_result_from_qiskit_circuit)
+from qcware_transpile.translations.qiskit.to_quasar import basis_gates # type: ignore
 
 # based in part on the documentation located at
 # https://github.com/Qiskit/qiskit-tutorials/blob/master/legacy_tutorials/terra/6_creating_a_provider.ipynb
@@ -107,6 +105,7 @@ class LocalQuasarMeasurementBackend(BackendV1):
             results=experiment_results)
         job._status = JobStatus.DONE
         return job
+
 
 class LocalQuasarStatevectorBackend(BackendV1):
     """

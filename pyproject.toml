@@ -13,11 +13,12 @@ python = "^3.8"
 qcware = "^2.2"
 qcware-quasar = "^1.0.1"
 qiskit-terra = "^0.16.3"
-dpcontracts = "^0.6.0"
-qcware-transpile = "0.1.1.alpha.0"
+qcware-transpile = "0.1.1.alpha.2"
+icontract = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
-hypothesis = "^5.41.5"
+icontract-hypothesis = "^1.1.0"
+hypothesis = "^6.1.1"
 pytest = "^6.1.2"
 python-language-server = {extras = ["all"], version = "^0.36.1"}
 mypy = "^0.790"

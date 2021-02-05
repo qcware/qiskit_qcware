@@ -4,9 +4,8 @@ from qiskit.result.models import (ExperimentResult, ExperimentResultData)
 from quasar import Circuit as QuasarCircuit
 from quasar import Backend as QuasarBackend
 from quasar import ProbabilityHistogram as QuasarProbabilityHistogram
-from qcware_transpile.translations.qiskit.to_quasar import translate, audit
+from qcware_transpile.translations.qiskit.to_quasar import translate # type: ignore
 from typing import Dict
-import dpcontracts
 
 
 def quasar_circuit_from_qiskit(c: QiskitCircuit) -> QuasarCircuit:
@@ -56,11 +55,12 @@ def remap_probability_histogram(
 
 
 def qiskit_experiment_result_from_quasar_probability_histogram(
-        h: QuasarProbabilityHistogram,
-        bit_map: Dict[int, int] = None) -> ExperimentResult:
+        h: QuasarProbabilityHistogram, bit_map: Dict[int,
+                                                     int]) -> ExperimentResult:
     # it's possible for a null bit map if there are no measurement gates, in which
     # case the aer simulator returns {} for counts since nothing is measured
-    qiskit_counts = remap_probability_histogram(h, bit_map) if len(bit_map) > 0 else {}
+    qiskit_counts = remap_probability_histogram(
+        h, bit_map) if len(bit_map) > 0 else {}
     experiment_data = ExperimentResultData(counts=qiskit_counts)
     experiment_result = ExperimentResult(shots=h.nmeasurement,
                                          success=True,

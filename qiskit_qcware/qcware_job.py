@@ -1,8 +1,7 @@
 from qiskit.providers import (JobV1, JobError, JobTimeoutError, Backend,
                               JobStatus)
 from qiskit.result import Result
-from qiskit.qobj import Qobj
-from dpcontracts import require
+from icontract import require
 from typing import Optional
 
 # using base from https://github.com/Qiskit/qiskit-terra/blob/master/qiskit/providers/job.py
@@ -19,8 +18,7 @@ class QcwareJob(JobV1):
         self._result: Optional[Result] = None
         self._status = JobStatus.INITIALIZING
 
-    @require("Job must be in a final state",
-             lambda args: args.self.in_final_state())
+    @require(lambda self: self.in_final_state())
     def result(self) -> Result:
         """
         Return the results of the job.
