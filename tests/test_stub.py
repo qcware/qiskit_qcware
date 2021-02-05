@@ -19,7 +19,7 @@ def test_stub():
     backend = provider.get_backend('local_measurement')
     # backend.forge_backend = 'qcware/gpu_simulator'
     qcware_counts = qiskit.execute(
-        qc, backend=provider.get_backend('forge_measurement'),
+        qc, backend=backend,
         shots=100).result().data()['counts']
     aer_backend = qiskit.Aer.get_backend('qasm_simulator')
     aer_counts = qiskit.execute(qc, aer_backend,
