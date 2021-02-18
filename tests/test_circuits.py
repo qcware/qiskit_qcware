@@ -35,4 +35,4 @@ def test_qiskit_qcware(qiskit_circuit):
     note(qiskit_circuit.draw())
     pv_qcware = qcware_probability_vector(qiskit_circuit)
     pv_aer = aer_probability_vector(qiskit_circuit)
-    assert (numpy.allclose(pv_aer, pv_qcware, atol=1e-6))
+    assert (numpy.allclose(pv_aer, pv_qcware, atol=1e-5))

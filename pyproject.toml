@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "qiskit_qcware"
-version = "0.1.1-alpha.3"
+version = "0.1.1-alpha.5"
 description = "A provider for Qiskit providing QCWare Forge services"
 authors = ["Vic Putz <vic.putz@qcware.com>"]
 
@@ -13,7 +13,7 @@ python = "^3.7"
 qcware = "^3.0"
 qcware-quasar = "^1.0.1"
 qiskit-terra = "^0.16.3"
-qcware-transpile = "^0.1.1.alpha.2"
+qcware-transpile = "^0.1.1.alpha.6"
 icontract = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
@@ -29,3 +29,5 @@ pytest-parallel = "^0.1.0"
 qiskit-aer = "^0.7.3"
 Sphinx = "^3.4.3"
 sphinx-rtd-theme = "^0.5.1"
+snakeviz = "^2.1.0"
+qiskit = "^0.23.6"

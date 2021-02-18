@@ -9,7 +9,9 @@ from typing import Dict
 
 
 def quasar_circuit_from_qiskit(c: QiskitCircuit) -> QuasarCircuit:
-    result = translate(c)
+    # we call this with should_transpile=False because presumably
+    # qiskit has already transpiled the circuit
+    result = translate(c, should_transpile=False)
     return result
 
 

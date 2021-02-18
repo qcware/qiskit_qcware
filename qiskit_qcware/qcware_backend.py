@@ -216,7 +216,7 @@ class QuasarStatevectorBackend(BackendV1):
             run_input = [run_input]
         experiment_results = [
             statevector_result_from_qiskit_circuit(c, job_options,
-                                                   QuasarSimulatorBackend())
+                                                   self.create_quasar_backend())
             for c in run_input
         ]
         # currently only handling one circuit
