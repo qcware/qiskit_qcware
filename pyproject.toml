@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "qiskit_qcware"
-version = "0.1.1-alpha.7"
+version = "0.1.1-alpha.8"
 description = "A provider for Qiskit providing QCWare Forge services"
 authors = ["Vic Putz <vic.putz@qcware.com>"]
 
@@ -32,3 +32,4 @@ sphinx-rtd-theme = "^0.5.1"
 snakeviz = "^2.1.0"
 qiskit = "^0.23.6"
 jupyterlab = "^3.0.9"
+ipywidgets = "^7.6.3"
