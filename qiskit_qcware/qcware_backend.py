@@ -134,6 +134,7 @@ class ForgeMeasurementBackend(QuasarMeasurementBackend):
         super().__init__(provider=provider)
         self._configuration.backend_name = "forge_measurement"
         self._configuration.local = False
+        self._configuration.basis_gates = list(set(self._configuration.basis_gates) - {'cswap', 'ccx'})
         self._configuration.description = "Forge backend (returns counts)"
         self.forge_backend = "qcware/gpu_simulator"
 
@@ -251,6 +252,7 @@ class ForgeStatevectorBackend(QuasarStatevectorBackend):
         super().__init__(provider=provider)
         self._configuration.backend_name = "forge_statevector"
         self._configuration.local = False
+        self._configuration.basis_gates = list(set(self._configuration.basis_gates) - {'cswap', 'ccx'})
         self._configuration.description = "Forge quasar backend (returns statevector)"
         self.forge_backend = "qcware/gpu_simulator"
 
