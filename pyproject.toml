@@ -4,17 +4,17 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "qiskit_qcware"
-version = "0.1.1-alpha.8"
+version = "0.1.1-alpha.10"
 description = "A provider for Qiskit providing QCWare Forge services"
 authors = ["Vic Putz <vic.putz@qcware.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 qcware = "^4.0"
 qcware-quasar = "^1.0.1"
 qiskit-terra = "^0.16.3"
-qcware-transpile = "^0.1.1.alpha.6"
 icontract = "^2.4.1"
+qcware-transpile = "0.1.1a10"
 
 [tool.poetry.dev-dependencies]
 icontract-hypothesis = "^1.1.0"

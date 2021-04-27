@@ -8,9 +8,12 @@ import qiskit
 from hypothesis import given, settings, note, assume
 import numpy
 
+# we exclude reset gates because quasar doesn't support them, and we exclude
+# measure gates because they interfere with statevector comparisons,
+# which we use here to ensure circuit equality
 ts = translation_set()
 translatable_gatedefs = [
-    x for x in qiskit_dialect.dialect().gate_defs if x.name not in {}
+    x for x in qiskit_dialect.dialect().gate_defs if x.name not in {'measure', 'reset'}
 ]
 translatable_circuits = circuits(1, 3, 1, 4,
                                  gates(gate_list=translatable_gatedefs))
