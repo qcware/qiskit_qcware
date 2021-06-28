@@ -5,6 +5,7 @@ from .strategies.qiskit import gates, circuits  # type: ignore
 from qiskit_qcware import QcwareProvider
 import quasar
 import qiskit
+from qiskit.providers.aer import AerSimulator
 from hypothesis import given, settings, note, assume
 import numpy
 
@@ -26,8 +27,10 @@ def qcware_probability_vector(circuit: quasar.Circuit):
 
 
 def aer_probability_vector(circuit: qiskit.QuantumCircuit):
-    backend = qiskit.Aer.get_backend('statevector_simulator')
-    sv = qiskit.execute(circuit, backend).result().data()['statevector']
+    backend = AerSimulator(method="statevector")
+    c = circuit.copy()
+    c.save_state("final_statevector")
+    sv = qiskit.execute(c, backend).result().data()['final_statevector']
     return abs(sv)
 
 

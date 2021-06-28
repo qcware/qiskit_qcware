@@ -1,5 +1,6 @@
 from qiskit_qcware import QcwareProvider
 import qiskit
+from qiskit.providers.aer import AerSimulator
 import numpy
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -17,6 +18,8 @@ def test_statevector():
     provider = QcwareProvider()
     sv1 = qiskit.execute(qc, backend=provider.get_backend(
         'local_statevector')).result().data()['statevector']
-    aer_backend = qiskit.Aer.get_backend('statevector_simulator')
-    sv2 = qiskit.execute(qc, aer_backend).result().data()['statevector']
+    aer_backend = AerSimulator(method="statevector")
+    c = qc.copy()
+    c.save_state("final_statevector")
+    sv2 = qiskit.execute(c, aer_backend).result().data()['final_statevector']
     assert (numpy.allclose(sv1, sv2))

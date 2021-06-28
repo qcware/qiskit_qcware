@@ -1,5 +1,6 @@
 from qiskit_qcware import QcwareProvider
 import qiskit
+from qiskit.providers.aer import AerSimulator
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -21,7 +22,7 @@ def test_stub():
     qcware_counts = qiskit.execute(
         qc, backend=backend,
         shots=100).result().data()['counts']
-    aer_backend = qiskit.Aer.get_backend('qasm_simulator')
+    aer_backend = AerSimulator(method="statevector")
     aer_counts = qiskit.execute(qc, aer_backend,
                                 shots=100).result().data()['counts']
     # results should have the same keys

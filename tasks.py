@@ -18,13 +18,13 @@ def mypy(c):
 @task
 def watch_for_tests(c, test_path="tests"):
     c.run(
-        f"watchmedo shell-command --drop --command='pytest --workers auto --tests-per-worker auto {test_path}' --recursive tests qiskit_qcware",
+        f"watchmedo shell-command --drop --command='pytest -n auto {test_path}' --recursive tests qiskit_qcware",
         pty=True)
 
 
 @task
 def test(c, test_path="tests"):
-    c.run(f'pytest --workers auto --tests-per-worker auto {test_path}',
+    c.run(f'pytest -n auto {test_path}',
           pty=True)
 
 
